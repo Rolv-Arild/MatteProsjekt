@@ -15,79 +15,59 @@ class SolarSystem:
     def __init__(self, h, tol):
         self.h = h
         self.tol = tol
-        self.predictors = []
         self.bodies = []
 
     def add_body(self, body: Body) -> None:
         self.bodies.append(body)
-        self.predictors.append(None)
-        for i in range(len(self.bodies)):
-            bo = self.bodies[i]
-            a = np.array((0, 0, 0))
-            for b in self.bodies:
-                if b != bo:
-                    a += bo.acceleration(b)
 
-            def F(Y):
-                res = np.zeros([7])
-                res[0] = 1
-                res[1] = Y[1]
-                res[2] = a[0]
-                res[3] = Y[3]
-                res[4] = a[1]
-                res[5] = Y[5]
-                res[6] = a[2]
-                return res
-            self.predictors[i] = RungeKuttaFehlberg54(F, 7, self.h, self.tol)
-
-    def step(self, h):
-        for i in range(len(self.bodies)):
-            body = self.bodies[i]
-            w = np.array([1, ])
+    def step(self, t):
+        for b in self.bodies:
+            bodies = list(self.bodies)
+            bodies.remove(b)
+            b.step(t, self.h, self.tol, bodies)
 
 
+dt = 1. / 60
 
-ss = SolarSystem(0.01, 5e-14)
-# ss.add_body(Body(1988500e24, 695700e3, (0, 0, 0), (0, 0, 0)))  # The Sun
-# ss.add_body(Body(5.97e24, 12756e3 / 2, (149.6e9, 0, 0), (0, 29.8e3, 0)))  # The Earth
-# ss.add_body(Body(0.073e24, 3475e3 / 2, (149.6e9 + 0.384e9, 0, 0), (0, 29.8e3 + 1.0e3, 0)))  # The Moon
+ss = SolarSystem(dt/100, 5e-15)
 
-ss.add_body(Body(5.97e24, 12756e3 / 2, (0, 0, 0), (0, 0, 0)))  # The Earth
-ss.add_body(Body(0.073e24, 3475e3 / 2, (0.384e9, 0, 0), (0, 1.0e3, 0)))  # The Moon
+# Sun earth moon
+# ss.add_body(Body(1988500e24, 695700e3, (0, 0), (0, 0)))  # The Sun
+# ss.add_body(Body(5.97e24, 12756e3 / 2, (149.6e9, 0), (0, 29.8e3)))  # The Earth
+# ss.add_body(Body(0.073e24, 3475e3 / 2, (149.6e9, 0.384e9), (0, 29.8e3, -1.0e3)))  # The Moon
+
+# Figure 8
+ss.add_body(Body(1, 1, (-0.970, 0.243), (-0.466, -0.433)))
+ss.add_body(Body(1, 1, (0.970, -0.243), (-0.466, -0.433)))
+ss.add_body(Body(1, 1, (0, 0), (2*0.466, 2*0.433)))
+
+# Earth moon
+# ss.add_body(Body(5.97e24, 12756e3 / 2, (0, 0), (0, 0)))  # The Earth
+# ss.add_body(Body(0.073e24, 3475e3 / 2, (0.384e9, 0), (0, 1.0e3)))  # The Moon
 
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
                        xlim=(-3, 3), ylim=(-3, 3))
 
-line1, = axes.plot([], [], 'o-g', lw=2)  # A green planet
-line2, = axes.plot([], [], 'o-y', lw=2)  # A yellow sun
-line3, = axes.plot([], [], 'o-b', lw=2)  # A blue moon
-time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
-energy_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
+body_count = len(ss.bodies)
+lines = [axes.plot([], [], 'o-b', lw=2)[0] for i in range(body_count)]
 
 
 def init():
     """initialize animation"""
-    line1.set_data([], [])
-    line2.set_data([], [])
-    line3.set_data([], [])
-    time_text.set_text('')
-    energy_text.set_text('')
-    return line1, line2, line3, time_text, energy_text
+    for l in lines:
+        l.set_data([], [])
+    return lines
 
 
 def animate(i):
     """perform animation step"""
-    global b1, b2, b3, dt
-    b1.step(dt)
-    b2.step(dt)
-    b3.step(dt)
-    line1.set_data(*b1.position())
-    line2.set_data(*b2.position())
-    line3.set_data(*b3.position())
-    time_text.set_text('time = %.1f' % b1.time_elapsed())
-    return line1, line2, line3, time_text, energy_text
+    ss.step(dt)
+    for l in range(body_count):
+        lines[l].set_data(*ss.bodies[l].coord)
+
+    return lines
 
 
 # choose the interval based on dt and the time to animate one step

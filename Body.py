@@ -1,7 +1,11 @@
+import functools
+
 import numpy as np
 from numpy.core.multiarray import ndarray
 
-G = 6.67e-11  # m^3 / kg s^2
+from RungeKuttaFehlberg import RungeKuttaFehlberg54
+
+G = 1  # m^3 / kg s^2
 
 
 class Body:
@@ -20,6 +24,7 @@ class Body:
         :param angular_velocity: a tuple containing the angular velocity in rad/sec.
                                  Is set to (0, 0, 0) if the planet does not rotate
         """
+        self.t = 0
         self.mass = mass
         self.radius = radius
         self.coord = np.array(coord)
@@ -41,9 +46,11 @@ class Body:
     def dist(self, body) -> float:
         return np.linalg.norm(body.coord - self.coord)
 
-    def acceleration(self, body) -> ndarray:
+    def acceleration(self, body, coord=None) -> ndarray:
+        if coord is None:
+            coord = self.coord
         a = G * body.mass / self.dist(body) ** 3
-        dists = self.coord - body.coord
+        dists = body.coord - coord
         return a * dists
 
     def F(self, body) -> ndarray:
@@ -58,6 +65,44 @@ class Body:
     def volume(self) -> float:
         return self.area() * self.radius / 3
 
-    def escape_velocity(self, r: float = radius) -> float:
+    def escape_velocity(self, r: float = None) -> float:
         # default value is escape velocity at surface
+        if r is None:
+            r = self.radius
         return np.sqrt(2 * G * self.mass / r)
+
+    def step(self, t, h, tol, bodies: list) -> None:
+        W = self.state()
+        rkf54 = RungeKuttaFehlberg54(functools.partial(self.ydot, bodies=bodies), len(W), h, tol)
+
+        while W[0] < t + self.t:
+            W, E = rkf54.safe_step(W)
+
+        rkf54.set_step_length(t + self.t - W[0])
+        W, E = rkf54.step(W)
+        self.set_state(W)
+
+    def state(self):
+        list = [self.t]
+        for i in range(len(self.coord)):
+            list.append(self.coord[i])
+            list.append(self.velocity[i])
+        return np.array(list)
+
+    def ydot(self, x, bodies) -> ndarray:
+        dim = len(self.coord)
+        coord = np.array([x[2 * i + 1] for i in range(dim)])
+        vel = np.array([x[2 * i + 2] for i in range(dim)])
+        z = np.zeros(1 + dim * 2)
+        z[0] = 1
+        for i in range(dim):
+            z[2 * i + 1] = vel[i]
+            z[2 * i + 2] = sum([self.acceleration(b, coord)[i] for b in bodies])
+
+        return z
+
+    def set_state(self, W):
+        self.t = W[0]
+        for i in range(len(self.coord)):
+            self.coord[i] = W[2 * i + 1]
+            self.velocity[i] = W[2 * i + 2]
