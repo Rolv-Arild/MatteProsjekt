@@ -5,7 +5,7 @@ from numpy.core.multiarray import ndarray
 
 from RungeKuttaFehlberg import RungeKuttaFehlberg54
 
-G = 1  # m^3 / kg s^2
+G = 6.67408e-11  # m^3 / kg s^2
 
 
 class Body:
@@ -15,7 +15,7 @@ class Body:
     velocity: ndarray
     angular_velocity: ndarray
 
-    def __init__(self, mass: float, radius: float, coord: tuple, velocity: tuple, angular_velocity: tuple = (0, 0, 0)):
+    def __init__(self, mass: float, radius: float, coord: tuple, velocity: tuple, angular_velocity: tuple = None):
         """
         :param mass: mass in kilograms
         :param radius: radius in meters, all bodies are approximated as solid spheres
@@ -27,12 +27,15 @@ class Body:
         self.t = 0
         self.mass = mass
         self.radius = radius
-        self.coord = np.array(coord)
-        self.velocity = np.array(velocity)
-        self.angular_velocity = np.ndarray(angular_velocity)
+        self.coord = np.array(coord, dtype='float64')
+        self.velocity = np.array(velocity, dtype='float64')
+        if angular_velocity is None:
+            self.angular_velocity = np.zeros([len(coord)], dtype='float64')
+        else:
+            self.angular_velocity = np.array(angular_velocity, dtype='float64')
 
-    def total_velocity(self) -> float:
-        return np.sqrt(self.velocity[0] ** 2 + self.velocity[1] ** 2 + self.velocity[2] ** 2)
+    def absolute_velocity(self) -> float:
+        return np.linalg.norm(self.velocity)
 
     def x(self) -> float:
         return self.coord[0]
@@ -49,8 +52,8 @@ class Body:
     def acceleration(self, body, coord=None) -> ndarray:
         if coord is None:
             coord = self.coord
-        a = G * body.mass / self.dist(body) ** 3
         dists = body.coord - coord
+        a = G * body.mass / (np.linalg.norm(dists) ** 3)
         return a * dists
 
     def F(self, body) -> ndarray:
@@ -70,6 +73,9 @@ class Body:
         if r is None:
             r = self.radius
         return np.sqrt(2 * G * self.mass / r)
+
+    def speed_at_surface(self) -> float:
+        return np.linalg.norm(self.angular_velocity)
 
     def step(self, t, h, tol, bodies: list) -> None:
         W = self.state()
