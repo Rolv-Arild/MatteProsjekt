@@ -1,10 +1,11 @@
 import numpy as np
 import math as ma
+import Body
 
 
-class Rocket:
-
-    def __init__(self):
+class Rocket(Body.Body):
+    def __init__(self, mass: float, radius: float, coord: tuple, velocity: tuple, angular_velocity: tuple = None):
+        super().__init__(mass, radius, coord, velocity, angular_velocity)
         self.stage1_duration = 168
         self.stage1_gross_mass = 2290000
         self.stage1_empty_mass = 130000
@@ -45,7 +46,7 @@ class Rocket:
     def eksosfart(self, t):
         return self.skyvekraft(t) / self.deltamass(t)
 
-    def mass(self, t):
+    def rocket_mass(self, t):
         if t < self.stage1_duration:
             return self.stage3_gross_mass + self.stage2_gross_mass + ((
                                                                                   self.stage1_gross_mass - self.stage1_empty_mass) / self.stage1_duration) * t + self.stage1_empty_mass
@@ -59,8 +60,9 @@ class Rocket:
             return self.stage3_empty_mass
 
 
-rocket = Rocket()
+if __name__ == "__main__":
+    rocket = Rocket(0.0, 0.0, (0.0, 0.0), (0.0, 0.0))
 
-for i in range(0, 168 + 360 + 165 + 335):
-    if i % 10 == 0:
-        print(i, ":", rocket.eksosfart(i))
+    for i in range(0, 168 + 360 + 165 + 335):
+        if i % 10 == 0:
+            print(i, ":", rocket.eksosfart(i))

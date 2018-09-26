@@ -34,6 +34,9 @@ class Body:
         else:
             self.angular_velocity = np.array(angular_velocity, dtype='float64')
 
+    def set_mass(self, mass):
+        self.mass = mass
+
     def absolute_velocity(self) -> float:
         return np.linalg.norm(self.velocity)
 
