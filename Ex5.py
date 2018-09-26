@@ -6,7 +6,7 @@ import matplotlib.pyplot as plot
 from Ex4 import Rocket
 from Body import Body
 
-rocket = Rocket(0, 0, (12756e3/2, 0), (0, 0), None)
+rocket = Rocket(0, 0, (0, 12756e3/2), (0, 0), None)
 rocket.set_mass(rocket.rocket_mass(0))
 
 
@@ -55,6 +55,7 @@ def init():
 def animate(i):
     """perform animation step"""
     lo.step(dt)
+    rock = lo.bodies[1]
     for l in range(body_count):
         lines[l].set_data(*lo.bodies[l].coord)
     return lines + [com]
