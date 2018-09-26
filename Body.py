@@ -71,6 +71,9 @@ class Body:
     def volume(self) -> float:
         return self.area() * self.radius / 3
 
+    def orbital_velocity(self, r: float):  # Speed required to orbit at certain radius from the center
+        return np.sqrt(G * self.mass / r)
+
     def escape_velocity(self, r: float = None) -> float:
         # default value is escape velocity at surface
         if r is None:
