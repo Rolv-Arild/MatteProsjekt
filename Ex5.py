@@ -6,7 +6,7 @@ import matplotlib.pyplot as plot
 from Ex4 import Rocket
 from Body import Body
 
-rocket = Rocket(0, 0, (0, 12756e3/2), (0, 0), None)
+rocket = Rocket(0, 0, (0, 12756e3 / 2 + 10), (0, 0), None)
 rocket.set_mass(rocket.rocket_mass(0))
 
 
@@ -28,10 +28,10 @@ class LiftOff:
             b.step(t, self.h, self.tol, bodies)
 
 
-dt = 24 * 60 * 60 * 1. / 60
+dt = 24 * 1. / 60
 lo = LiftOff(dt / 10.0, 1e-10)
-lo.add_body(Body(5.97e24, 12756e3 / 2, (1.601622423200423E+06, 1.471196461264217E+08),
-                 (-3.028433032337041E+01, 8.741108700584631E-02), (0.0, 0.0, 7.292115053925690e-05)))  # The Earth
+lo.add_body(Body(5.97e24, 12756e3 / 2, (0, 0),
+                 (0, 0), (0.0, 0.0, 7.292115053925690e-05)))  # The Earth
 lo.add_body(rocket)
 
 # Visualization

@@ -47,48 +47,47 @@ class Rocket(Body.Body):
     def eksosfart(self, t):
         return self.skyvekraft(t) / self.deltamass(t)
 
-    def luft_motstand(self, h):
-        jordradius = 12756e3 / 2
-        fart = self.velocity
+    def air_resistance(self, body):
         areal = np.pi * 5.05 ** 2
         CD = 0.5
         ph, th = 0, 0
+        h = np.abs(self.dist(body) - body.radius)
+        vel = np.linalg.norm(self.velocity - body.velocity)
 
-        if h >= jordradius and h < jordradius + 11000:
+        if 0 <= h < 11000:
             th = 288.19 - 0.00649 * h
-            ph = 101290 * (th/288.08)**5.256
-        elif h > jordradius + 11000:
+            ph = 101290 * (th / 288.08) ** 5.256
+        elif 11000 <= h < 25000:
             th = 216.69
-            ph = 127760 * np.e**(-0.000157*h)
-        elif h > jordradius + 25000 :
+            ph = 127760 * np.e ** (-0.000157 * h)
+        elif 25000 <= h:
             th = 141.94 + 0.00299 * h
-            ph = 2488 * (th/216.6)**-11.388
+            ph = 2488 * (th / 216.6) ** -11.388
 
-        #print(th,ph)
         trykk = (ph / th) * 3.4855
-        F = 0.5 * CD * trykk * areal * fart**2
+        F = 0.5 * CD * trykk * areal * vel ** 2
+        print(F, h, vel)
 
         return F
 
     def acceleration(self, body, coord=None):
         body_acc = body.acceleration(self)
-        t = body.t/1440
-        rocket_acc = (self.skyvekraft(t)) / self.rocket_mass(t)
-        #print(np.sqrt(self.coord[0]**2 + self.coord[1]**2))
-        #print(self.luft_motstand(np.sqrt(self.coord[0]**2 + self.coord[1]**2)))
+        rocket_acc = (self.skyvekraft(self.t)) / self.rocket_mass(self.t)
+        # print(np.sqrt(self.coord[0]**2 + self.coord[1]**2))
+        air_resistance = -self.air_resistance(body)
 
-        return [0, rocket_acc] + body_acc
+        return np.array([0, rocket_acc]) + body_acc + np.array([0, air_resistance / self.mass])
 
     def rocket_mass(self, t):
         if t < self.stage1_duration:
             return self.stage3_gross_mass + self.stage2_gross_mass + ((
-                                                                                  self.stage1_gross_mass - self.stage1_empty_mass) / self.stage1_duration) * t + self.stage1_empty_mass
+                                                                              self.stage1_gross_mass - self.stage1_empty_mass) / self.stage1_duration) * t + self.stage1_empty_mass
         elif t < self.stage1_duration + self.stage2_duration:
             return self.stage3_gross_mass + ((
-                                                         self.stage2_gross_mass - self.stage2_empty_mass) / self.stage2_duration) * t + self.stage2_empty_mass
+                                                     self.stage2_gross_mass - self.stage2_empty_mass) / self.stage2_duration) * t + self.stage2_empty_mass
         elif t < self.stage1_duration + self.stage2_duration + self.stage3_duration:
             return ((
-                                self.stage3_gross_mass - self.stage3_empty_mass) / self.stage3_duration) * t + self.stage3_empty_mass
+                            self.stage3_gross_mass - self.stage3_empty_mass) / self.stage3_duration) * t + self.stage3_empty_mass
         else:
             return self.stage3_empty_mass
 
