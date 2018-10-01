@@ -56,6 +56,7 @@ def animate(i):
     """perform animation step"""
     lo.step(dt)
     rock = lo.bodies[1]
+    print(rock.coord)
     for l in range(body_count):
         lines[l].set_data(*lo.bodies[l].coord)
     return lines + [com]

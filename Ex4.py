@@ -70,12 +70,18 @@ class Rocket(Body.Body):
 
         return F
 
-    def acceleration(self, body, coord=None):
+    def acceleration(self, body, coord=None, angle=None):
         body_acc = body.acceleration(self)
         rocket_acc = (self.skyvekraft(self.t)) / self.rocket_mass(self.t)
         # print(np.sqrt(self.coord[0]**2 + self.coord[1]**2))
         air_resistance = -self.air_resistance(body)
-        return np.array([0, rocket_acc]) + body_acc + np.array([0, air_resistance / self.mass])
+        start_acc = np.array([0, rocket_acc]) + body_acc + np.array([0, air_resistance / self.mass])
+        acc = (0, 0)
+        if angle is not None:
+            acc = (start_acc[0] * np.cos(angle), start_acc[1] * np.sin(angle))
+        else:
+            acc = start_acc
+        return acc
 
     def rocket_mass(self, t):
         if t < self.stage1_duration:
