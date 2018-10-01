@@ -37,10 +37,10 @@ lo.add_body(rocket)
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
-                       xlim=(-16e8, 16e8), ylim=(-16e8, 16e8))
+                       xlim=(-2e7, 2e7), ylim=(-2e7, 2e7))
 
 body_count = len(lo.bodies)
-lines = [axes.plot([], [], 'o-b', lw=2)[0] for i in range(body_count)]
+lines = [axes.plot([], [], 'o-b', lw=2, markersize=77)[0], axes.plot([], [], '^-r', lw=2)[0]]
 com = axes.plot([], [], 'o-r', lw=2)[0]
 
 
@@ -68,6 +68,7 @@ animate(0.0)
 t1 = time.time()
 
 delay = 1000 / (24 * 60 * 60) * dt - (t1 - t0)
+print(delay)
 
 anim = animation.FuncAnimation(fig,  # figure to plot in
                                animate,  # function that is called on each frame

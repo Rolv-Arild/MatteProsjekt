@@ -80,8 +80,8 @@ class RungeKuttaFehlberg54:
 
 
 def F(Y):
-    M = np.array([[1, 1],
-                  [-1, 1]])
+    M = np.array([[-1, -1],
+                  [1, -1]])
     res = np.ones(3)
     res[1:3] = M.dot(Y[1:3])
     return res
@@ -92,6 +92,8 @@ def current_time_seconds():
 
 
 def main(tol, tEnd):
+    print("tol: ", tol)
+
     W = np.array([0, 1, 0])
     h = 0.1
     rkf54 = RungeKuttaFehlberg54(F, 3, h, tol)
@@ -105,7 +107,8 @@ def main(tol, tEnd):
     rkf54.setStepLength(tEnd - W[0])
     W, E = rkf54.step(W)
     tid_in = current_time_seconds() - start_in
-    global_trunc = W[1:3] - [np.exp(10) * np.cos(10), -np.exp(10) * np.sin(10)]
+    #global_trunc = W[1:3] - [np.exp(10) * np.cos(10), -np.exp(10) * np.sin(10)]
+    global_trunc = W[1:3] - [np.exp(-tEnd)*np.cos(tEnd), np.exp(-tEnd)*np.sin(tEnd)]
 
     print(global_trunc)
     print(accumulated_error)
@@ -115,8 +118,10 @@ def main(tol, tEnd):
 
 if __name__ == "__main__":
     # execute only if run as a script
+    e_mach = 7./3 - 4./3 - 1
+    print(e_mach)
     forhold = []
-    t = 10.0
+    t = 1.0
     optimal = (0.0, 0.0)
     forrige_forhold = 0
     for i in range(0, 35):
