@@ -9,4 +9,4 @@ if __name__ == "__main__":
 
     for i in range(0, 168 + 360 + 165 + 335):
         if i % 10 == 0:
-            print(i, ":", rocket.eksosfart(i))
+            print(i, ":", rocket.exhaust_velocity(i))

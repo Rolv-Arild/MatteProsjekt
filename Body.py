@@ -30,7 +30,7 @@ class Body:
         self.coord = np.array(coord, dtype='float64')
         self.velocity = np.array(velocity, dtype='float64')
         if angular_velocity is None:
-            self.angular_velocity = np.zeros(3, dtype='float64')
+            self.angular_velocity = np.zeros([len(coord)], dtype='float64')
         else:
             self.angular_velocity = np.array(angular_velocity, dtype='float64')
 
@@ -52,7 +52,7 @@ class Body:
     def dist(self, body) -> float:
         return np.linalg.norm(body.coord - self.coord)
 
-    def acceleration(self, body, coord=None, vel=None) -> ndarray:
+    def acceleration(self, body, coord=None) -> ndarray:
         if coord is None:
             coord = self.coord
         dists = body.coord - coord
