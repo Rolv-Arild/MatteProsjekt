@@ -9,6 +9,7 @@ from SolarSystem import SolarSystem
 from Stage import Stage
 
 rocket = Rocket.saturn_v()
+rocket.theta = 0
 
 dt = 24 * 1. / 60
 ss = SolarSystem(dt / 10.0, 1e-10)
@@ -19,7 +20,7 @@ ss.add_body(rocket)
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
-                       xlim=(-16e8, 16e8), ylim=(-16e8, 16e8))
+                       xlim=(-1e7, 1e7), ylim=(-1e7, 1e7))
 
 body_count = len(ss.bodies)
 lines = [axes.plot([], [], 'o-b', lw=2)[0] for i in range(body_count)]
