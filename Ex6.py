@@ -3,45 +3,54 @@ import math as ma
 import time
 from matplotlib import animation
 import matplotlib.pyplot as plot
+from matplotlib.patches import Circle
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredDrawingArea
+
 from Rocket import Rocket
 from Body import Body
 from SolarSystem import SolarSystem
 from Stage import Stage
 
 rocket = Rocket.saturn_v()
-rocket.theta = 0
+rocket.theta = 2 * np.pi * 60 / 360
+
+earth = Body(5.97e24, 12756e3 / 2, (0, 0),
+             (0, 0), (0.0, 0.0, 7.292115053925690e-05))
 
 dt = 24 * 1. / 60
-ss = SolarSystem(dt / 10.0, 1e-10)
-ss.add_body(Body(5.97e24, 12756e3 / 2, (0, 0),
-                 (0, 0), (0.0, 0.0, 7.292115053925690e-05)))  # The Earth
+ss = SolarSystem(dt / 10.0, 1e-14)
+ss.add_body(earth)
 ss.add_body(rocket)
 
 # Visualization
 fig = plot.figure()
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=True,
                        xlim=(-1e7, 1e7), ylim=(-1e7, 1e7))
 
 body_count = len(ss.bodies)
-lines = [axes.plot([], [], 'o-b', lw=2)[0] for i in range(body_count)]
+
+earth_circle = Circle(earth.coord, earth.radius, color='b', transform=axes.transData)
+
+rocket_plot = axes.plot([], [], 'tab:gray', marker=(3, 0, np.rad2deg(rocket.theta)-90), lw=2)[0]
 com = axes.plot([], [], 'o-r', lw=2)[0]
 
 
 def init():
     """initialize animation"""
-    for l in lines:
-        l.set_data([], [])
+    axes.add_patch(earth_circle)
+
+    rocket_plot.set_data([], [])
     com.set_data([], [])
-    return lines + [com]
+    return earth_circle, rocket_plot
 
 
 def animate(i):
     """perform animation step"""
     ss.step(dt)
-    rock = ss.bodies[1]
-    for l in range(body_count):
-        lines[l].set_data(*ss.bodies[l].coord)
-    return lines + [com]
+    earth_circle.center = earth.coord
+
+    rocket_plot.set_data(*rocket.coord)
+    return earth_circle, rocket_plot
 
 
 # choose the interval based on dt and the time to animate one step
@@ -60,4 +69,5 @@ anim = animation.FuncAnimation(fig,  # figure to plot in
                                blit=True,
                                init_func=init  # initialization
                                )
+
 plot.show()

@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 import Body
@@ -38,7 +40,7 @@ class Rocket(Body.Body):
         area = np.pi * 5.05 ** 2
         c_d = 0.5  # drag coefficient
         ph, th = 0, 0
-        h = np.abs(np.linalg.norm(coord - body.coord) - body.radius)
+        h = np.linalg.norm(coord - body.coord) - body.radius
         vel = np.linalg.norm(velocity - body.velocity)
 
         if 0 <= h < 11000:
@@ -72,7 +74,7 @@ class Rocket(Body.Body):
                 self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
         self.printC += 1
         return np.array(
-            [thrust_acc * np.cos(self.theta), thrust_acc * np.sin(self.theta)]) + grav_acc + air_resistance_acc
+            [thrust_acc * math.cos(self.theta), thrust_acc * math.sin(self.theta)]) + grav_acc + air_resistance_acc
 
     def rocket_mass(self, t):
         mass = 0.0
