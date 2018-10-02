@@ -3,25 +3,46 @@ import math as ma
 import time
 from matplotlib import animation
 import matplotlib.pyplot as plot
-from Rocket import Rocket
+from Ex4 import Rocket
 from Body import Body
-from SolarSystem import SolarSystem
+from Stage import Stage
 
 rocket = Rocket(0, 0, (0, 12756e3 / 2 + 10), (0, 0), None)
-rocket.set_mass(rocket.rocket_mass(0))
+rocket.add_stage(Stage(130000, 99000, 168, 35100000))
+rocket.add_stage(Stage(40100, 456100, 360, 5141000))
+rocket.add_stage(Stage(13500, 109500, 165 + 335, 1000000))
+
+
+class LiftOff:
+    bodies: list
+
+    def __init__(self, h, tol):
+        self.h = h
+        self.tol = tol
+        self.bodies = []
+
+    def add_body(self, body: Body) -> None:
+        self.bodies.append(body)
+
+    def step(self, t):
+        for b in self.bodies:
+            bodies = list(self.bodies)
+            bodies.remove(b)
+            b.step(t, self.h, self.tol, bodies)
+
 
 dt = 24 * 1. / 60
-ss = SolarSystem(dt / 10.0, 1e-10)
-ss.add_body(Body(5.97e24, 12756e3 / 2, (0, 0),
+lo = LiftOff(dt / 10.0, 1e-10)
+lo.add_body(Body(5.97e24, 12756e3 / 2, (0, 0),
                  (0, 0), (0.0, 0.0, 7.292115053925690e-05)))  # The Earth
-ss.add_body(rocket)
+lo.add_body(rocket)
 
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
                        xlim=(-16e8, 16e8), ylim=(-16e8, 16e8))
 
-body_count = len(ss.bodies)
+body_count = len(lo.bodies)
 lines = [axes.plot([], [], 'o-b', lw=2)[0] for i in range(body_count)]
 com = axes.plot([], [], 'o-r', lw=2)[0]
 
@@ -36,10 +57,10 @@ def init():
 
 def animate(i):
     """perform animation step"""
-    ss.step(dt)
-    rock = ss.bodies[1]
+    lo.step(dt)
+    rock = lo.bodies[1]
     for l in range(body_count):
-        lines[l].set_data(*ss.bodies[l].coord)
+        lines[l].set_data(*lo.bodies[l].coord)
     return lines + [com]
 
 

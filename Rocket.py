@@ -1,48 +1,34 @@
 import numpy as np
 
 import Body
+import Stage
 
 
 class Rocket(Body.Body):
+    stages: list
 
     def __init__(self, mass: float, radius: float, coord: tuple, velocity: tuple, angular_velocity: tuple = None):
         super().__init__(mass, radius, coord, velocity, angular_velocity)
-        self.stage1_duration = 168
-        self.stage1_gross_mass = 2290000
-        self.stage1_empty_mass = 130000
-        self.stage1_thrust = 35100000
+        self.stages = []
+        self.mass = 0.0
 
-        self.stage2_duration = 360
-        self.stage2_gross_mass = 496200
-        self.stage2_empty_mass = 40100
-        self.stage2_thrust = 5141000
-
-        self.stage3_duration = 165 + 335
-        self.stage3_gross_mass = 123000
-        self.stage3_empty_mass = 13500
-        self.stage3_thrust = 1000000
+    def add_stage(self, stage: Stage):
+        self.stages.append(stage)
+        self.mass += stage.gross_mass()
 
     def skyvekraft(self, t):
-        stage1_duration = 168
-        stage2_duration = 360
-        stage3_duration = 165 + 335
-
-        if t < stage1_duration:
-            return self.stage1_thrust
-        elif t < stage1_duration + stage2_duration:
-            return self.stage2_thrust
-        elif t < stage1_duration + stage2_duration + stage3_duration:
-            return self.stage3_thrust
-        else:
-            return 0
+        for stage in self.stages:
+            if t < stage.duration:
+                return stage.thrust
+            t -= stage.duration
+        return 0.0
 
     def deltamass(self, t):
-        if t < self.stage1_duration:
-            return (self.stage1_gross_mass - self.stage1_empty_mass) / self.stage1_duration
-        elif t < self.stage1_duration + self.stage2_duration:
-            return (self.stage2_gross_mass - self.stage2_empty_mass) / self.stage2_duration
-        elif t < self.stage1_duration + self.stage2_duration + self.stage3_duration:
-            return (self.stage3_gross_mass - self.stage3_empty_mass) / self.stage3_duration
+        for stage in self.stages:
+            if t < stage.duration:
+                return stage.fuel_mass / stage.duration
+            t -= stage.duration
+        return 0.0
 
     def eksosfart(self, t):
         return self.skyvekraft(t) / self.deltamass(t)
@@ -67,8 +53,8 @@ class Rocket(Body.Body):
         trykk = (ph / th) * 3.4855
         F = -0.5 * CD * trykk * areal * vel * self.velocity
 
-        print("Air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (F, h, self.velocity, vel))
-
+        # print("Air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (F, h, self.velocity, vel))
+        print("Height:", h)
         return F
 
     def acceleration(self, body, coord=None, vel=None):
@@ -79,18 +65,17 @@ class Rocket(Body.Body):
         rocket_acc = (self.skyvekraft(self.t)) / mass
         air_resistance_acc = self.air_resistance(body, vel) / mass
 
-        print("Rocket acc: %s, body acc: %s, air res acc: %s" % (rocket_acc, body_acc, air_resistance_acc))
+        print("Mass:", mass, " Time:", self.t)
+
+        # print("Time: %s, Rocket acc: %s, body acc: %s, air res acc: %s" % (self.t, rocket_acc, body_acc, air_resistance_acc))
         return np.array([0, rocket_acc]) + body_acc + air_resistance_acc
 
     def rocket_mass(self, t):
-        if t < self.stage1_duration:
-            return self.stage3_gross_mass + self.stage2_gross_mass + ((
-                                                                              self.stage1_gross_mass - self.stage1_empty_mass) / self.stage1_duration) * t + self.stage1_empty_mass
-        elif t < self.stage1_duration + self.stage2_duration:
-            return self.stage3_gross_mass + ((
-                                                     self.stage2_gross_mass - self.stage2_empty_mass) / self.stage2_duration) * t + self.stage2_empty_mass
-        elif t < self.stage1_duration + self.stage2_duration + self.stage3_duration:
-            return ((
-                            self.stage3_gross_mass - self.stage3_empty_mass) / self.stage3_duration) * t + self.stage3_empty_mass
-        else:
-            return self.stage3_empty_mass
+        mass = 0
+        for stage in self.stages:
+            if t < stage.duration:
+                mass += stage.mass(t)
+            t -= stage.duration
+        if mass == 0:
+            return self.stages[-1].empty_mass
+        return mass
