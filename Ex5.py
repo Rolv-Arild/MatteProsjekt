@@ -10,7 +10,7 @@ from Stage import Stage
 
 rocket = Rocket.saturn_v()
 
-dt = 24 * 1. / 60
+dt = 24 * 60 * 10. / 60
 ss = SolarSystem(dt / 10.0, 1e-10)
 ss.add_body(Body(5.97e24, 12756e3 / 2, (0, 0),
                  (0, 0), (0.0, 0.0, 7.292115053925690e-05)))  # The Earth

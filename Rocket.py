@@ -27,7 +27,7 @@ class Rocket(Body.Body):
     def delta_mass(self, t):
         for stage in self.stages:
             if t < stage.duration:
-                return stage.fuel_mass / stage.duration
+                return stage.fuel_mass() / stage.duration
             t -= stage.duration
         return 0.0
 
@@ -43,19 +43,20 @@ class Rocket(Body.Body):
 
         if 0 <= h < 11000:
             th = 288.19 - 0.00649 * h
-            ph = 101290 * (th / 288.08) ** 5.256
+            ph = 101.290 * (th / 288.08) ** 5.256
         elif 11000 <= h < 25000:
             th = 216.69
-            ph = 127760 * np.e ** (-0.000157 * h)
+            ph = 127.760 * np.e ** (-0.000157 * h)
         elif 25000 <= h:
             th = 141.94 + 0.00299 * h
-            ph = 2488 * (th / 216.6) ** -11.388
+            ph = 2.488 * (th / 216.6) ** -11.388
 
         density = (ph / th) * 3.4855
         F = -0.5 * c_d * density * area * vel * (velocity - body.velocity)
 
         if self.printC % 100 == 0:
-            print("%s, air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (self.printC, F, h, (velocity - body.velocity), vel))
+            print("%s, air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (
+            self.printC, F, h, (velocity - body.velocity), vel))
         return F
 
     def acceleration(self, body, coord=None, vel=None):
@@ -67,14 +68,15 @@ class Rocket(Body.Body):
         air_resistance_acc = self.air_resistance(body, coord, vel) / mass
 
         if self.printC % 100 == 0:
-            print("%s, mass: %s, time: %s, thrust acc: %s, grav acc: %s, air res acc: %s" % (self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
+            print("%s, mass: %s, time: %s, thrust acc: %s, grav acc: %s, air res acc: %s" % (
+            self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
         self.printC += 1
         return np.array([0, thrust_acc]) + grav_acc + air_resistance_acc
 
     def rocket_mass(self, t):
         mass = 0.0
         for stage in self.stages:
-            if t <= stage.duration:
+            if t < stage.duration:
                 mass += stage.mass(t)
             t -= stage.duration
         if mass == 0.0:
