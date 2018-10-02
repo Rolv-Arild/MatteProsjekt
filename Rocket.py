@@ -67,7 +67,7 @@ class Rocket(Body.Body):
         trykk = (ph / th) * 3.4855
         F = -0.5 * CD * trykk * areal * vel * self.velocity
 
-        print(F, h, vel, self.velocity)
+        print("Air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (F, h, self.velocity, vel))
 
         return F
 
@@ -79,7 +79,7 @@ class Rocket(Body.Body):
         rocket_acc = (self.skyvekraft(self.t)) / mass
         air_resistance_acc = self.air_resistance(body, vel) / mass
 
-        print(rocket_acc, body_acc, air_resistance_acc)
+        print("Rocket acc: %s, body acc: %s, air res acc: %s" % (rocket_acc, body_acc, air_resistance_acc))
         return np.array([0, rocket_acc]) + body_acc + air_resistance_acc
 
     def rocket_mass(self, t):
