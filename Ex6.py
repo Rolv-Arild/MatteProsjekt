@@ -8,10 +8,7 @@ from Body import Body
 from SolarSystem import SolarSystem
 from Stage import Stage
 
-rocket = Rocket(0, 0, (0, 12756e3 / 2 + 10), (0, 0), None)
-rocket.add_stage(Stage(130000, 99000, 168, 35100000))
-rocket.add_stage(Stage(40100, 456100, 360, 5141000))
-rocket.add_stage(Stage(13500, 109500, 165 + 335, 1000000))
+rocket = Rocket.saturn_v()
 
 dt = 24 * 1. / 60
 ss = SolarSystem(dt / 10.0, 1e-10)

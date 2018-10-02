@@ -54,7 +54,6 @@ def animate(i):
     for l in range(body_count):
         lines[l].set_data(*ss.bodies[l].coord)
     com.set_data(*ss.barycenter())
-    print(ss.barycenter())
     return lines + [com]
 
 

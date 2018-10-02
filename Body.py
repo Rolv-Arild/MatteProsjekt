@@ -85,7 +85,7 @@ class Body:
 
     def step(self, t, h, tol, bodies: list) -> None:
         W = self.state()
-        rkf54 = RungeKuttaFehlberg54(functools.partial(self.ydot, bodies=bodies), len(W), h, tol)
+        rkf54 = RungeKuttaFehlberg54(functools.partial(self.y_dot, bodies=bodies), len(W), h, tol)
 
         while W[0] < t + self.t:
             W, E = rkf54.safe_step(W)
@@ -101,7 +101,7 @@ class Body:
             list.append(self.velocity[i])
         return np.array(list)
 
-    def ydot(self, x, bodies) -> ndarray:
+    def y_dot(self, x, bodies) -> ndarray:
         dim = len(self.coord)
         coord = np.array([x[2 * i + 1] for i in range(dim)])
         vel = np.array([x[2 * i + 2] for i in range(dim)])
