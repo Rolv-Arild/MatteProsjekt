@@ -75,12 +75,12 @@ class Rocket(Body.Body):
         rocket_acc = (self.skyvekraft(self.t)) / self.rocket_mass(self.t)
         # print(np.sqrt(self.coord[0]**2 + self.coord[1]**2))
         air_resistance = -self.air_resistance(body)
-        start_acc = np.array([0, rocket_acc]) + body_acc + np.array([0, air_resistance / self.mass])
-        acc = (0, 0)
         if angle is not None:
+            start_acc = np.array([rocket_acc, rocket_acc]) + body_acc + np.array([air_resistance / self.mass, air_resistance / self.mass])
             acc = (start_acc[0] * np.cos(angle), start_acc[1] * np.sin(angle))
         else:
-            acc = start_acc
+            acc = np.array([0, rocket_acc]) + body_acc + np.array([0, air_resistance / self.mass])
+        print(acc)
         return acc
 
     def rocket_mass(self, t):

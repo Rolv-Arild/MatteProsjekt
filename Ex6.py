@@ -13,10 +13,11 @@ rocket.set_mass(rocket.rocket_mass(0))
 class LiftOff:
     bodies: list
 
-    def __init__(self, h, tol):
+    def __init__(self, h, tol, angle):
         self.h = h
         self.tol = tol
         self.bodies = []
+        self.angle = angle
 
     def add_body(self, body: Body) -> None:
         self.bodies.append(body)
@@ -25,11 +26,11 @@ class LiftOff:
         for b in self.bodies:
             bodies = list(self.bodies)
             bodies.remove(b)
-            b.step(t, self.h, self.tol, bodies)
+            b.step(t, self.h, self.tol, bodies, self.angle)
 
 
-dt = 24 * 1. / 60
-lo = LiftOff(dt / 10.0, 1e-10)
+dt = 24 * 1. / 60 #24
+lo = LiftOff(dt / 10.0, 1e-10, np.deg2rad(45))
 lo.add_body(Body(5.97e24, 12756e3 / 2, (0, 0),
                  (0, 0), (0.0, 0.0, 7.292115053925690e-05)))  # The Earth
 lo.add_body(rocket)
@@ -37,7 +38,7 @@ lo.add_body(rocket)
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
-                       xlim=(-2e7, 2e7), ylim=(-2e7, 2e7))
+                       xlim=(-2e7, 2e7), ylim=(-2e7, 2e7)) #2e7
 
 body_count = len(lo.bodies)
 lines = [axes.plot([], [], 'o-b', lw=2, markersize=77)[0], axes.plot([], [], '^-r', lw=2)[0]]

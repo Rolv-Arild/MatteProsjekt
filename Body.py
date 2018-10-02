@@ -52,7 +52,7 @@ class Body:
     def dist(self, body) -> float:
         return np.linalg.norm(body.coord - self.coord)
 
-    def acceleration(self, body, coord=None) -> ndarray:
+    def acceleration(self, body, coord=None, angle=None) -> ndarray:
         if coord is None:
             coord = self.coord
         dists = body.coord - coord
@@ -83,9 +83,9 @@ class Body:
     def speed_at_surface(self) -> float:
         return np.linalg.norm(self.angular_velocity)
 
-    def step(self, t, h, tol, bodies: list) -> None:
+    def step(self, t, h, tol, bodies: list, angle=None) -> None:
         W = self.state()
-        rkf54 = RungeKuttaFehlberg54(functools.partial(self.ydot, bodies=bodies), len(W), h, tol)
+        rkf54 = RungeKuttaFehlberg54(functools.partial(self.ydot, bodies=bodies, angle=angle), len(W), h, tol)
 
         while W[0] < t + self.t:
             W, E = rkf54.safe_step(W)
@@ -101,7 +101,7 @@ class Body:
             list.append(self.velocity[i])
         return np.array(list)
 
-    def ydot(self, x, bodies) -> ndarray:
+    def ydot(self, x, bodies, angle=None) -> ndarray:
         dim = len(self.coord)
         coord = np.array([x[2 * i + 1] for i in range(dim)])
         vel = np.array([x[2 * i + 2] for i in range(dim)])
@@ -109,7 +109,7 @@ class Body:
         z[0] = 1
         for i in range(dim):
             z[2 * i + 1] = vel[i]
-            z[2 * i + 2] = sum([self.acceleration(b, coord)[i] for b in bodies])
+            z[2 * i + 2] = sum([self.acceleration(b, coord, angle)[i] for b in bodies])
 
         return z
 
