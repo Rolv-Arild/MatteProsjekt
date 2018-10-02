@@ -55,21 +55,21 @@ class Rocket(Body.Body):
         F = -0.5 * c_d * density * area * vel * (velocity - body.velocity)
 
         if self.printC % 100 == 0:
-            print("%s, Air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (self.printC, F, h, (velocity - body.velocity), vel))
+            print("%s, air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (self.printC, F, h, (velocity - body.velocity), vel))
         return F
 
     def acceleration(self, body, coord=None, vel=None):
         if vel is None:
             vel = self.velocity
         mass = self.rocket_mass(self.t)
-        body_acc = super().acceleration(body, coord)
-        rocket_acc = (self.thrust(self.t)) / mass
+        grav_acc = super().acceleration(body, coord)
+        thrust_acc = self.thrust(self.t) / mass
         air_resistance_acc = self.air_resistance(body, coord, vel) / mass
 
         if self.printC % 100 == 0:
-            print("%s, Mass: %s, Time: %s, Rocket acc: %s, body acc: %s, air res acc: %s" % (self.printC, mass, self.t, rocket_acc, body_acc, air_resistance_acc))
+            print("%s, mass: %s, time: %s, thrust acc: %s, grav acc: %s, air res acc: %s" % (self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
         self.printC += 1
-        return np.array([0, rocket_acc]) + body_acc + air_resistance_acc
+        return np.array([0, thrust_acc]) + grav_acc + air_resistance_acc
 
     def rocket_mass(self, t):
         mass = 0.0
