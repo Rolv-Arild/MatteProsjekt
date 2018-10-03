@@ -43,13 +43,15 @@ class Rocket(Body.Body):
         return np.linalg.norm(coord - body.coord) - body.radius
 
     def air_resistance(self, body, coord, velocity):
-        area = np.pi * 5.05 ** 2
+        area = np.pi * self.radius ** 2
         c_d = 0.5  # drag coefficient
         ph, th = 0, 0
         h = self.height(coord, body)
         vel = np.linalg.norm(velocity - body.velocity)
 
-        if 0 <= h < 11000:
+        # print(h)
+
+        if h < 11000:
             th = 288.19 - 0.00649 * h
             ph = 101.290 * (th / 288.08) ** 5.256
         elif 11000 <= h < 25000:
@@ -101,8 +103,8 @@ class Rocket(Body.Body):
         return mass
 
     @classmethod
-    def saturn_v(cls, stage3: Stage = Stage.Stage(13500, 123000, 165 + 335, 1000000)):
-        rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), 0)
+    def saturn_v(cls, stage3: Stage = Stage.Stage(13500, 123000, 165 + 335, 10000000)):
+        rocket = Rocket(5.05, (0, 12756e3 / 2 + 10), (0, 0), 0)
         rocket.add_stage(Stage.Stage(130000, 2290000, 168, 35100000))
         rocket.add_stage(Stage.Stage(40100, 496200, 360, 5141000))
         rocket.add_stage(stage3)

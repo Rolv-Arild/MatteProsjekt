@@ -56,7 +56,11 @@ class Body:
         if coord is None:
             coord = self.coord
         dists = body.coord - coord
-        a = G * body.mass / (np.linalg.norm(dists) ** 3)
+        dist = np.linalg.norm(dists)
+        if dist < body.radius:
+            raise ValueError(
+                "Distance (%s) is lower than self.radius (%s) + body.radius (%s)" % (dist, self.radius, body.radius))
+        a = G * body.mass / (dist ** 3)
         return a * dists
 
     def F(self, body) -> ndarray:
