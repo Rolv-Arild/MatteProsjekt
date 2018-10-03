@@ -22,39 +22,40 @@ rm = d - re  # Moon barycenter distance
 vm = np.sqrt(G * (m + n) / rm)  # Moon orbital velocity around barycenter
 ve = vm * n / m  # Earth orbital velocity around barycenter
 
+moon = Body(n, 3475e3 / 2, (rm, 0.0), (0.0, vm), (0.0, 0.0, 2.6617e-06))
+earth = Body(m, 12756e3 / 2, (-re, 0.0), (0.0, -ve), (0.0, 0.0, 7.29212e-05))
+
 # Earth moon
-ss.add_body(
-    Body(n, 3475e3 / 2, (rm, 0.0), (0.0, vm),
-         (0.0, 0.0, 2.6617e-06)))  # The Moon
-ss.add_body(
-    Body(m, 12756e3 / 2, (-re, 0.0), (0.0, -ve),
-         (0.0, 0.0, 7.29212e-05)))  # The Earth
+ss.add_body(moon)  # The Moon
+ss.add_body(earth)  # The Earth
 
 # Visualization
 fig = plot.figure()
-axes = fig.add_subplot(111, aspect='equal', autoscale_on=False,
-                       xlim=(-1e9, 1e9), ylim=(-1e9, 1e9))
+axes = fig.add_subplot(111, aspect='equal', autoscale_on=True,
+                       xlim=(-6e8, 6e8), ylim=(-6e8, 6e8))
 
 body_count = len(ss.bodies)
-lines = [axes.plot([], [], 'o-b', lw=i + 1)[0] for i in range(body_count)]
-com = axes.plot([], [], 'o-r', lw=1)[0]
+
+moon_circle = Circle(moon.coord, moon.radius, color='tab:gray', transform=axes.transData)
+earth_circle = Circle(earth.coord, earth.radius, color='b', transform=axes.transData)
+barycenter_circle = Circle(ss.barycenter(), earth.radius - moon.radius, color='r')
 
 
 def init():
     """initialize animation"""
-    for l in lines:
-        l.set_data([], [])
-    com.set_data([], [])
-    return lines + [com]
+    axes.add_patch(earth_circle)
+    axes.add_patch(moon_circle)
+    axes.add_patch(barycenter_circle)
+    return earth_circle, moon_circle, barycenter_circle
 
 
 def animate(i):
     """perform animation step"""
     ss.step(dt)
-    for l in range(body_count):
-        lines[l].set_data(*ss.bodies[l].coord)
-    com.set_data(*ss.barycenter())
-    return lines + [com]
+    earth_circle.center = earth.coord
+    moon_circle.center = moon.coord
+    barycenter_circle.center = ss.barycenter()
+    return earth_circle, moon_circle, barycenter_circle
 
 
 # choose the interval based on dt and the time to animate one step
