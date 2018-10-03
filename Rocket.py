@@ -97,11 +97,11 @@ class Rocket(Body.Body):
         return mass
 
     @classmethod
-    def saturn_v(cls):
+    def saturn_v(cls, stage3_dur=0, stage3_thrust=0):
         rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), 0)
         rocket.add_stage(Stage.Stage(130000, 2290000, 168, 35100000))
         rocket.add_stage(Stage.Stage(40100, 496200, 360, 5141000))
-        rocket.add_stage(Stage.Stage(13500, 13500+36135, 0, 0))
+        rocket.add_stage(Stage.Stage(13500, 13500+36135, stage3_dur, stage3_thrust))
         # rocket.add_stage(Stage.Stage(13500, 13500+36135, 165, 330000))
         # rocket.add_stage(Stage.Stage(13500, 123000, 165 + 335, 1000000))
         return rocket

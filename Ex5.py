@@ -10,7 +10,7 @@ from Body import Body
 from SolarSystem import SolarSystem
 from Stage import Stage
 
-rocket = Rocket.saturn_v()
+rocket = Rocket.saturn_v(165 + 335, 1000000)
 earth = Body(5.97e24, 12756e3 / 2, (0, 0), (0, 0), (0.0, 0.0, 7.292115053925690e-05))
 
 dt = 24 * 1. / 60
@@ -21,7 +21,7 @@ ss.add_body(rocket)
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=True,
-                       xlim=(-1e7, 1e7), ylim=(-1e7, 1e7))
+                       xlim=(-2e7, 2e7), ylim=(-2e7, 2e7))
 
 body_count = len(ss.bodies)
 

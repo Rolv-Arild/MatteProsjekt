@@ -91,6 +91,8 @@ def current_time_seconds():
     return time.time()
 
 
+    #Gjennomfører RungeKuttaFehlberg54 for en gitt toleranse og slutt-t
+    #Returnerer tiden det tok å beregne
 def main(tol, tEnd):
     print("tol: ", tol)
 
@@ -110,12 +112,13 @@ def main(tol, tEnd):
     #global_trunc = W[1:3] - [np.exp(10) * np.cos(10), -np.exp(10) * np.sin(10)]
     global_trunc = W[1:3] - [np.exp(-tEnd)*np.cos(tEnd), np.exp(-tEnd)*np.sin(tEnd)]
 
-    print(global_trunc)
-    print(accumulated_error)
+    print("Global feil: ", global_trunc)
+    print("Akkumulert lokal feil: ", accumulated_error)
     print("\n")
     return tid_in
 
-
+    #Kjører main() for toleranse = 10^0, ..., 10^-35
+    #tEnd kan endres ved å endre t her
 if __name__ == "__main__":
     # execute only if run as a script
     e_mach = 7./3 - 4./3 - 1
@@ -132,5 +135,4 @@ if __name__ == "__main__":
             optimal = (np.power(10.0, -i), forholdet)
 
         forrige_forhold = forholdet
-    print(forhold)
     print(optimal)
