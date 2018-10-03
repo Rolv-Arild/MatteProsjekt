@@ -28,6 +28,10 @@ fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=True,
                        xlim=(-1e7, 1e7), ylim=(-1e7, 1e7))
 
+time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
+height_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
+velocity_text = axes.text(0.02, 0.85, '', transform=axes.transAxes)
+
 body_count = len(ss.bodies)
 
 earth_circle = Circle(earth.coord, earth.radius, color='b', transform=axes.transData)
@@ -42,7 +46,10 @@ def init():
 
     rocket_plot.set_data([], [])
     com.set_data([], [])
-    return earth_circle, rocket_plot
+    time_text.set_text('')
+    height_text.set_text('')
+    velocity_text.set_text('')
+    return earth_circle, rocket_plot, time_text, height_text, velocity_text
 
 
 def animate(i):
@@ -52,7 +59,10 @@ def animate(i):
 
     rocket_plot.set_marker((3, 0, np.rad2deg(np.math.atan2(rocket.facing[1], rocket.facing[0])) - 90))
     rocket_plot.set_data(*rocket.coord)
-    return earth_circle, rocket_plot
+    velocity_text.set_text('velocity = %.1f' % rocket.absolute_velocity())
+    # height_text.set_text('time = %.1f' % rocket.)
+    time_text.set_text('time = %.1f' % rocket.t)
+    return earth_circle, rocket_plot, time_text, height_text, velocity_text
 
 
 # choose the interval based on dt and the time to animate one step
