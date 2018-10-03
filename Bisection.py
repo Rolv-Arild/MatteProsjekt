@@ -11,11 +11,9 @@ eps = 0.0001
 dt = 24 * 1. / 60
 tol = 1e-14
 
-last_dur = 1650
-
 
 def test_system(theta: float) -> int:
-    rocket = Rocket.saturn_v(Stage(123000 - 36135, 123000, last_dur, 165 * 1000000 / last_dur))
+    rocket = Rocket.saturn_v(Stage(13500, 13500 + 36135, 0, 0))
     rocket.velocity = np.array((-460, 0))
     rocket.theta = 2 * np.pi * theta / 360
     earth = Body(5.97e24, 12756e3 / 2, (0, 0), (0, 0), (0.0, 0.0, 7.292115053925690e-05))
@@ -24,7 +22,7 @@ def test_system(theta: float) -> int:
     ss.add_body(rocket)
 
     t = 0
-    while rocket.dist(earth) < earth.radius * 1.1:
+    while rocket.dist(earth) < earth.radius * 1.2:
         try:
             ss.step(dt)
             t += dt

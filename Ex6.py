@@ -11,8 +11,8 @@ from Body import Body
 from SolarSystem import SolarSystem
 from Stage import Stage
 
-rocket = Rocket.saturn_v(Stage(123000 - 36135, 123000, 165, 165 * 1000000 / 165))
-rocket.theta = 2 * np.pi * 0 / 360
+rocket = Rocket.saturn_v(Stage(13500, 13500 + 36135, 0, 0))
+rocket.theta = 2 * np.pi * 0.25 / 360
 rocket.velocity = np.array((-460.0, 0.0))
 
 earth = Body(5.97e24, 12756e3 / 2, (0, 0),
@@ -60,7 +60,7 @@ def animate(i):
     rocket_plot.set_marker((3, 0, np.rad2deg(np.math.atan2(rocket.facing[1], rocket.facing[0])) - 90))
     rocket_plot.set_data(*rocket.coord)
     velocity_text.set_text('velocity = %.1f' % rocket.absolute_velocity())
-    # height_text.set_text('time = %.1f' % rocket.)
+    height_text.set_text('height = %.1f' % rocket.height(rocket.coord, earth))
     time_text.set_text('time = %.1f' % rocket.t)
     return earth_circle, rocket_plot, time_text, height_text, velocity_text
 
