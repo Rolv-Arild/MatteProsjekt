@@ -52,7 +52,7 @@ class Body:
     def dist(self, body) -> float:
         return np.linalg.norm(body.coord - self.coord)
 
-    def acceleration(self, body, coord=None) -> ndarray:
+    def acceleration(self, body, coord=None, vel=None) -> ndarray:
         if coord is None:
             coord = self.coord
         dists = body.coord - coord
@@ -109,7 +109,7 @@ class Body:
         z[0] = 1
         for i in range(dim):
             z[2 * i + 1] = vel[i]
-            z[2 * i + 2] = sum([self.acceleration(b, coord)[i] for b in bodies])
+            z[2 * i + 2] = sum([self.acceleration(b, coord, vel)[i] for b in bodies])
 
         return z
 

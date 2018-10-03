@@ -10,8 +10,10 @@ class Rocket(Body.Body):
     stages: list
     printC = 0
 
-    def __init__(self, radius: float, coord: tuple, velocity: tuple, theta: float, angular_velocity: tuple = None):
+    def __init__(self, radius: float, coord: tuple, velocity: tuple, theta: float, facing: tuple = (0.0, 1.0),
+                 angular_velocity: tuple = None):
         super().__init__(0.0, radius, coord, velocity, angular_velocity)
+        self.facing = np.array(facing)
         self.stages = []
         self.theta = theta
 
@@ -59,6 +61,7 @@ class Rocket(Body.Body):
         if self.printC % 100 == 0:
             print("%s, air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (
                 self.printC, F, h, (velocity - body.velocity), vel))
+
         return F
 
     def acceleration(self, body, coord=None, vel=None):
@@ -73,8 +76,15 @@ class Rocket(Body.Body):
             print("%s, mass: %s, time: %s, thrust acc: %s, grav acc: %s, air res acc: %s" % (
                 self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
         self.printC += 1
-        return np.array(
-            [thrust_acc * math.cos(self.theta), thrust_acc * math.sin(self.theta)]) + grav_acc + air_resistance_acc
+
+        return self.facing * thrust_acc + grav_acc + air_resistance_acc
+
+    def step(self, t, h, tol, bodies: list):
+        super().step(t, h, tol, bodies)
+        c, s = np.cos(self.theta), np.sin(self.theta)
+        R = np.matrix([[c, -s], [s, c]])
+
+        self.facing = np.array(np.dot(R, self.facing).tolist()[0])
 
     def rocket_mass(self, t):
         mass = 0.0
@@ -91,5 +101,7 @@ class Rocket(Body.Body):
         rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), np.pi / 2)
         rocket.add_stage(Stage.Stage(130000, 2290000, 168, 35100000))
         rocket.add_stage(Stage.Stage(40100, 496200, 360, 5141000))
-        rocket.add_stage(Stage.Stage(13500, 123000, 165 + 335, 1000000))
+        rocket.add_stage(Stage.Stage(13500, 13500+36135, 0, 0))
+        # rocket.add_stage(Stage.Stage(13500, 13500+36135, 165, 330000))
+        # rocket.add_stage(Stage.Stage(13500, 123000, 165 + 335, 1000000))
         return rocket

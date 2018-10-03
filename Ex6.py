@@ -12,7 +12,7 @@ from SolarSystem import SolarSystem
 from Stage import Stage
 
 rocket = Rocket.saturn_v()
-rocket.theta = 2 * np.pi * 60 / 360
+rocket.theta = 2 * np.pi * 0.1 / 360
 
 earth = Body(5.97e24, 12756e3 / 2, (0, 0),
              (0, 0), (0.0, 0.0, 7.292115053925690e-05))
@@ -31,7 +31,7 @@ body_count = len(ss.bodies)
 
 earth_circle = Circle(earth.coord, earth.radius, color='b', transform=axes.transData)
 
-rocket_plot = axes.plot([], [], 'tab:gray', marker=(3, 0, np.rad2deg(rocket.theta)-90), lw=2)[0]
+rocket_plot = axes.plot([], [], 'tab:gray', marker=(3, 0, np.rad2deg(np.math.atan2(rocket.facing[1], rocket.facing[0])) - 90), lw=2)[0]
 com = axes.plot([], [], 'o-r', lw=2)[0]
 
 
@@ -49,6 +49,7 @@ def animate(i):
     ss.step(dt)
     earth_circle.center = earth.coord
 
+    rocket_plot.set_marker((3, 0, np.rad2deg(np.math.atan2(rocket.facing[1], rocket.facing[0])) - 90))
     rocket_plot.set_data(*rocket.coord)
     return earth_circle, rocket_plot
 
@@ -63,7 +64,7 @@ delay = 1000 / (24 * 60 * 60) * dt - (t1 - t0)
 
 anim = animation.FuncAnimation(fig,  # figure to plot in
                                animate,  # function that is called on each frame
-                               frames=30000,  # total number of frames
+                               frames=300000,  # total number of frames
                                interval=delay,  # time to wait between each frame.
                                repeat=False,
                                blit=True,
