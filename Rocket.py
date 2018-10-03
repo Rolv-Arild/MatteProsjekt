@@ -58,9 +58,9 @@ class Rocket(Body.Body):
         density = (ph / th) * 3.4855
         F = -0.5 * c_d * density * area * vel * (velocity - body.velocity)
 
-        if self.printC % 100 == 0:
-            print("%s, air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (
-                self.printC, F, h, (velocity - body.velocity), vel))
+        # if self.printC % 100 == 0:
+        #     print("%s, air resistance: %s, height: %s, velocity: %s, absolute vel: %s" % (
+        #         self.printC, F, h, (velocity - body.velocity), vel))
 
         return F
 
@@ -72,10 +72,10 @@ class Rocket(Body.Body):
         thrust_acc = self.thrust(self.t) / mass
         air_resistance_acc = self.air_resistance(body, coord, vel) / mass
 
-        if self.printC % 100 == 0:
-            print("%s, mass: %s, time: %s, thrust acc: %s, grav acc: %s, air res acc: %s" % (
-                self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
-        self.printC += 1
+        # if self.printC % 100 == 0:
+        #     print("%s, mass: %s, time: %s, thrust acc: %s, grav acc: %s, air res acc: %s" % (
+        #         self.printC, mass, self.t, thrust_acc, grav_acc, air_resistance_acc))
+        # self.printC += 1
 
         return self.facing * thrust_acc + grav_acc + air_resistance_acc
 
@@ -97,7 +97,7 @@ class Rocket(Body.Body):
         return mass
 
     @classmethod
-    def saturn_v(cls, stage3_dur=0, stage3_thrust=0):
+    def saturn_v(cls, stage3_dur=165 + 335, stage3_thrust=1000000):
         rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), 0)
         rocket.add_stage(Stage.Stage(130000, 2290000, 168, 35100000))
         rocket.add_stage(Stage.Stage(40100, 496200, 360, 5141000))

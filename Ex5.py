@@ -10,7 +10,7 @@ from Body import Body
 from SolarSystem import SolarSystem
 from Stage import Stage
 
-rocket = Rocket.saturn_v(165 + 335, 1000000)
+rocket = Rocket.saturn_v()
 earth = Body(5.97e24, 12756e3 / 2, (0, 0), (0, 0), (0.0, 0.0, 7.292115053925690e-05))
 
 dt = 24 * 1. / 60

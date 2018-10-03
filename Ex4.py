@@ -2,7 +2,7 @@ from Rocket import Rocket
 from Stage import Stage
 
 if __name__ == "__main__":
-    rocket = Rocket.saturn_v(165 + 335, 1000000)
+    rocket = Rocket.saturn_v()
 
     for i in range(0, 168 + 360 + 165 + 335):
         if i % 100 == 0:
