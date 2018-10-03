@@ -27,7 +27,7 @@ ve = vm * n / m  # Earth orbital velocity around barycenter
 
 moon = Body(n, 3475e3 / 2, (rm, 0.0), (0.0, vm), (0.0, 0.0, 2.6617e-06))
 
-dt = 24 * 1. / 60
+dt = 24 * 60 * 1. / 60
 ss = SolarSystem(dt / 10.0, 1e-14)
 ss.add_body(earth)
 ss.add_body(rocket)
@@ -36,7 +36,7 @@ ss.add_body(moon)
 # Visualization
 fig = plot.figure()
 axes = fig.add_subplot(111, aspect='equal', autoscale_on=True,
-                       xlim=(-1e7, 1e7), ylim=(-1e7, 1e7))
+                       xlim=(-6e8, 6e8), ylim=(-6e8, 6e8))
 
 time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes)
 height_text = axes.text(0.02, 0.90, '', transform=axes.transAxes)
@@ -76,6 +76,7 @@ def animate(i):
     velocity_text.set_text('velocity = %.1f' % rocket.absolute_velocity())
     height_text.set_text('height = %.1f' % rocket.height(rocket.coord, earth))
     time_text.set_text('time = %.1f' % rocket.t)
+    print(moon.coord)
     return earth_circle, rocket_plot, time_text, height_text, velocity_text, moon_circle
 
 
@@ -85,7 +86,7 @@ t0 = time.time()
 animate(0.0)
 t1 = time.time()
 
-delay = 1000 / (24 * 60 * 60) * dt - (t1 - t0)
+delay = 1. / (24 * 60 * 60) * dt - (t1 - t0)
 
 anim = animation.FuncAnimation(fig,  # figure to plot in
                                animate,  # function that is called on each frame
