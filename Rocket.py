@@ -38,11 +38,15 @@ class Rocket(Body.Body):
     def exhaust_velocity(self, t):
         return self.thrust(t) / self.delta_mass(t)
 
+    @staticmethod
+    def height(coord, body):
+        return np.linalg.norm(coord - body.coord) - body.radius
+
     def air_resistance(self, body, coord, velocity):
         area = np.pi * 5.05 ** 2
         c_d = 0.5  # drag coefficient
         ph, th = 0, 0
-        h = np.linalg.norm(coord - body.coord) - body.radius
+        h = self.height(coord, body)
         vel = np.linalg.norm(velocity - body.velocity)
 
         if 0 <= h < 11000:
@@ -97,11 +101,9 @@ class Rocket(Body.Body):
         return mass
 
     @classmethod
-    def saturn_v(cls, stage3_dur=165 + 335, stage3_thrust=1000000):
+    def saturn_v(cls, stage3: Stage = Stage.Stage(13500, 123000, 165 + 335, 1000000)):
         rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), 0)
         rocket.add_stage(Stage.Stage(130000, 2290000, 168, 35100000))
         rocket.add_stage(Stage.Stage(40100, 496200, 360, 5141000))
-        rocket.add_stage(Stage.Stage(13500, 13500+36135, stage3_dur, stage3_thrust))
-        # rocket.add_stage(Stage.Stage(13500, 13500+36135, 165, 330000))
-        # rocket.add_stage(Stage.Stage(13500, 123000, 165 + 335, 1000000))
+        rocket.add_stage(stage3)
         return rocket
