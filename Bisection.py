@@ -14,19 +14,19 @@ tol = 1e-14
 
 def test_system(theta: float) -> int:
     rocket = Rocket.saturn_v(Stage(13500, 13500 + 36135, 0, 0))
-    rocket.velocity = np.array((-460, 0))
     rocket.theta = 2 * np.pi * theta / 360
+    rocket.velocity = np.array((-460.0, 0.0))
+
     earth = Body(5.97e24, 12756e3 / 2, (0, 0), (0, 0), (0.0, 0.0, 7.292115053925690e-05))
-    ss = SolarSystem(dt / 10.0, tol)
+
+    ss = SolarSystem(dt / 10.0, 1e-14)
     ss.add_body(earth)
     ss.add_body(rocket)
 
-    t = 0
-    while rocket.dist(earth) < earth.radius * 1.2:
+    while rocket.dist(earth) < earth.radius * 1.75:
         try:
             ss.step(dt)
-            t += dt
-            if t >= 56540:
+            if rocket.t >= 10000:
                 return 0  # orbit
         except ZeroDivisionError:
             return -1  # crash into earth

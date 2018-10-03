@@ -12,11 +12,10 @@ from SolarSystem import SolarSystem
 from Stage import Stage
 
 rocket = Rocket.saturn_v(Stage(13500, 13500 + 36135, 0, 0))
-rocket.theta = 2 * np.pi * 0.25 / 360
+rocket.theta = 2 * np.pi * 0.26538848876953125 / 360
 rocket.velocity = np.array((-460.0, 0.0))
 
-earth = Body(5.97e24, 12756e3 / 2, (0, 0),
-             (0, 0), (0.0, 0.0, 7.292115053925690e-05))
+earth = Body(5.97e24, 12756e3 / 2, (0, 0), (0, 0), (0.0, 0.0, 7.292115053925690e-05))
 
 dt = 24 * 1. / 60
 ss = SolarSystem(dt / 10.0, 1e-14)
