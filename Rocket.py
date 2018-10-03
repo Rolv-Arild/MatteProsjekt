@@ -81,7 +81,7 @@ class Rocket(Body.Body):
 
     def step(self, t, h, tol, bodies: list):
         super().step(t, h, tol, bodies)
-        c, s = np.cos(self.theta), np.sin(self.theta)
+        c, s = np.cos(self.theta*t), np.sin(self.theta*t)
         R = np.matrix([[c, -s], [s, c]])
 
         self.facing = np.array(np.dot(R, self.facing).tolist()[0])
@@ -98,7 +98,7 @@ class Rocket(Body.Body):
 
     @classmethod
     def saturn_v(cls):
-        rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), np.pi / 2)
+        rocket = Rocket(0, (0, 12756e3 / 2 + 10), (0, 0), 0)
         rocket.add_stage(Stage.Stage(130000, 2290000, 168, 35100000))
         rocket.add_stage(Stage.Stage(40100, 496200, 360, 5141000))
         rocket.add_stage(Stage.Stage(13500, 13500+36135, 0, 0))
