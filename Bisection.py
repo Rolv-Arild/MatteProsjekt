@@ -23,14 +23,17 @@ def test_system(theta: float) -> int:
     ss.add_body(earth)
     ss.add_body(rocket)
 
-    while rocket.dist(earth) < earth.radius * 1.75:
+    while True:
         try:
             ss.step(dt)
-            if rocket.t >= 10000:
+            if rocket.t >= 25000:
                 return 0  # orbit
-        except ValueError:
-            return -1  # crash into earth
-    return 1  # escape from earth
+        except ValueError:  # crash into earth
+            # probably not the best metric to use, but simple and it works pretty well
+            if rocket.t < 3000:
+                return -1
+            else:
+                return 1
 
 
 assert test_system(A) > 0
