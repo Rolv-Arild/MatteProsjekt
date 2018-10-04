@@ -28,14 +28,14 @@ ve = vm * n / m  # Earth orbital velocity around barycenter
 moon = Body(n, 3475e3 / 2, (rm, 0.0), (0.0, vm), (0.0, 0.0, 2.6617e-06))
 earth = Body(m, 12756e3 / 2, (-re, 0.0), (0.0, -ve), (0.0, 0.0, 7.29212e-05))
 
-burn_angle = 2 * np.pi * 223 / 360  # 223 for free return trajectory, 221 for closer flybly, 220 for crash into moon
+burn_angle = 2 * np.pi * 225 / 360  # 225 for free return trajectory, 224 for crash into moon
 
 rocket = Rocket(1.95, (earth.coord[0] + np.cos(burn_angle) * (earth.radius + 300e3),
                        earth.coord[1] + np.sin(burn_angle) * (earth.radius + 300e3)),
                 (earth.velocity[0] + np.cos(burn_angle + np.pi/2) * 7.731e3,
                  earth.velocity[1] + np.sin(burn_angle + np.pi/2) * 7.731e3),
                 0.0011577, (np.cos(burn_angle + np.pi/2), np.sin(burn_angle + np.pi/2)))
-rocket.add_stage(Stage(11900, 28800, 100, 250000))
+rocket.add_stage(Stage(11900, 28800, 100, 248500))  # values somewhat based on csm values, but adjusted
 
 # Earth moon
 ss.add_body(moon)  # The Moon

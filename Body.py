@@ -85,7 +85,7 @@ class Body:
         return np.sqrt(2 * G * self.mass / r)
 
     def speed_at_surface(self) -> float:
-        return np.linalg.norm(self.angular_velocity)
+        return np.linalg.norm(self.angular_velocity) * self.radius
 
     def step(self, t, h, tol, bodies: list) -> None:
         W = self.state()

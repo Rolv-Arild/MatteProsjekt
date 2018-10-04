@@ -50,10 +50,11 @@ def animate(i):
     """perform animation step"""
     ss.step(dt)
     earth_circle.center = earth.coord
+    rocket_plot.set_marker((3, 0, np.rad2deg(np.math.atan2(rocket.facing[1], rocket.facing[0])) - 90))
     rocket_plot.set_data(*rocket.coord)
 
     velocity_text.set_text('velocity = %.1f' % rocket.absolute_velocity())
-    # height_text.set_text('time = %.1f' % rocket.)
+    height_text.set_text('height = %.1f' % rocket.height(rocket.coord, earth))
     time_text.set_text('time = %.1f' % rocket.t)
 
     return earth_circle, rocket_plot, time_text, height_text, velocity_text
